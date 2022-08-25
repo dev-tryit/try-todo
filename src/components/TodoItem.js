@@ -18,9 +18,9 @@ const TodoItem = ({ todo, onDelete }) => {
 
     return (
         <div
-            className={"p-3 max-h-14 flex align-center justify-between border"}
+            className={"p-3 flex align-center justify-between border"}
         >
-            <span className={"truncate flex-grow"}>
+            <span className={"flex-grow"}>
                 <input
                     className="cursor-pointer mr-2"
                     onChange={toggleCompleted}
@@ -31,6 +31,9 @@ const TodoItem = ({ todo, onDelete }) => {
                     className={`w-full flex-grow ${
                         isCompleted ? "line-through" : ""
                     }`}
+                    style={{
+                        whiteSpace: 'pre-wrap',
+                    }}
                 >
                     {todo.task}
                 </span>
