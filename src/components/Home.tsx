@@ -68,6 +68,17 @@ const Home = ({ user }:HomeProp) => {
             }
         }
     };
+    const updateTodo = async (todoId:string, objectToUpdate:object) => {
+        //{ is_complete: !isCompleted }
+        const { data, error } = await supabase
+            .from("todos")
+            .update(objectToUpdate)
+            .eq("id", todoId)
+            .single();
+        if (error) {
+            console.error(error);
+        }
+    };
 
     const handleLogout = async () => {
         supabase.auth.signOut().catch(console.error);
@@ -116,6 +127,7 @@ const Home = ({ user }:HomeProp) => {
                                 key={todo.id}
                                 todo={todo}
                                 onDelete={() => deleteTodo(todo.id)}
+                                onUpdate={(objectToUpdate) => updateTodo(todo.id,objectToUpdate)}
                             />
                         ))
                     ) : (

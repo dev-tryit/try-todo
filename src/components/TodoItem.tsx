@@ -3,63 +3,101 @@ import { supabase } from "../lib/api";
 import log from "../utils/log";
 
 type UpdatableTextProp = {
-    className?:any;
+    className?: any;
     isCompleted: any;
-    setTodoItemMode: any;
+    toggleTodoItemMode: any;
     todo: any;
     todoItemMode: TodoItemMode;
+    onDelete: any;
+    onUpdate: (objectToUpdate: any) => void;
 };
 const UpdatableText = ({
     className,
     isCompleted,
-    setTodoItemMode,
+    toggleTodoItemMode,
     todo,
     todoItemMode,
+    onDelete,
+    onUpdate,
 }: UpdatableTextProp) => {
     const [inputValue, setInputValue] = useState(todo.task);
-    
-    log.info("UpdatableText todoItemMode",todoItemMode);
+    const deleteFunc = () => {
+        onDelete();
+    };
+    const updateFunc = () => {
+        onUpdate({ task: inputValue });
+        toggleTodoItemMode();
+    };
+
+    log.info("UpdatableText todoItemMode", todoItemMode);
     let returnTag;
     if (todoItemMode === "view") {
-        returnTag= (
+        returnTag = (
             <span
-                className={`grow ${
-                    isCompleted ? "line-through" : ""
-                }`}
-                onClick={() =>
-                    setTodoItemMode((todoItemMode: any) =>
-                        todoItemMode === "view" ? "change" : "view"
-                    )
-                }
+                className={`grow ${isCompleted ? "line-through" : ""}`}
+                onClick={toggleTodoItemMode}
             >
                 {inputValue}
             </span>
         );
     } else {
-        returnTag= <input className={'grow'} value={inputValue} onChange={(e)=>setInputValue(e.target.value)}/>;
+        returnTag = (
+            <input
+                className={"grow"}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                        updateFunc();
+                    }
+                }}
+            />
+        );
     }
 
-    return <span className={className}>
-        {returnTag}
-    </span>;
+    return (
+        <>
+            <span className={className}>{returnTag}</span>
+            <button
+                className={
+                    "flex-none font-mono text-red-500 text-xl border px-2"
+                }
+                onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (todoItemMode === "view") {
+                        deleteFunc();
+                    } else {
+                        updateFunc();
+                    }
+                }}
+            >
+                {todoItemMode === "view" ? "X" : "O"}
+            </button>
+        </>
+    );
 };
 
 type TodoItemMode = "view" | "change";
-type TodoItemProp = { todo: any; onDelete: any };
-const TodoItem = ({ todo, onDelete }: TodoItemProp) => {
+type TodoItemProp = {
+    todo: any;
+    onDelete: any;
+    onUpdate: (objectToUpdate: any) => void;
+};
+const TodoItem = ({ todo, onDelete, onUpdate }: TodoItemProp) => {
     const [isCompleted, setIsCompleted] = useState(todo.is_complete);
     const [todoItemMode, setTodoItemMode] = useState<TodoItemMode>("view");
 
     const toggleCompleted = async () => {
-        const { data, error } = await supabase
-            .from("todos")
-            .update({ is_complete: !isCompleted })
-            .eq("id", todo.id)
-            .single();
-        if (error) {
-            console.error(error);
-        }
-        setIsCompleted(data.is_complete);
+        const nextIsCompleted = !isCompleted;
+        onUpdate({ is_complete: nextIsCompleted });
+        setIsCompleted(nextIsCompleted);
+    };
+
+    const toggleTodoItemMode = () => {
+        setTodoItemMode((todoItemMode: any) =>
+            todoItemMode === "view" ? "change" : "view"
+        );
     };
 
     return (
@@ -71,22 +109,14 @@ const TodoItem = ({ todo, onDelete }: TodoItemProp) => {
                 checked={isCompleted ? true : false}
             />
             <UpdatableText
-                    className={"grow flex"}
-                    isCompleted={isCompleted}
-                    setTodoItemMode={setTodoItemMode}
-                    todo={todo}
-                    todoItemMode={todoItemMode}
-                />
-            <button
-                className={"flex-none font-mono text-red-500 text-xl border px-2"}
-                onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onDelete();
-                }}
-            >
-                X
-            </button>
+                className={"grow flex"}
+                isCompleted={isCompleted}
+                toggleTodoItemMode={toggleTodoItemMode}
+                todo={todo}
+                todoItemMode={todoItemMode}
+                onDelete={onDelete}
+                onUpdate={onUpdate}
+            />
         </div>
     );
 };
