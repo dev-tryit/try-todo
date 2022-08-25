@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { supabase } from "../lib/api";
 
-const TodoItem = ({ todo, onDelete }) => {
+type TodoItemProp = { todo:any, onDelete:any};
+const TodoItem = ({ todo, onDelete }:TodoItemProp) => {
     const [isCompleted, setIsCompleted] = useState(todo.is_complete);
 
     const toggleCompleted = async () => {
@@ -25,7 +26,7 @@ const TodoItem = ({ todo, onDelete }) => {
                     className="cursor-pointer mr-2"
                     onChange={toggleCompleted}
                     type="checkbox"
-                    checked={isCompleted ? true : ""}
+                    checked={isCompleted ? true : false}
                 />
                 <span
                     className={`w-full flex-grow ${

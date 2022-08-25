@@ -1,12 +1,14 @@
 import { useRef, useState } from "react";
 import { supabase } from "../lib/api";
+import { Nullable } from "../type/Nullable";
 
+type HeplerTextType = { error: Nullable<boolean>, text: Nullable<string> };
 const Auth = () => {
-    const [helperText, setHelperText] = useState({ error: null, text: null });
-    const emailRef = useRef();
-    const passwordRef = useRef();
+    const [helperText, setHelperText] = useState<HeplerTextType>({ error: null, text: null });
+    const emailRef = useRef<any>();
+    const passwordRef = useRef<any>();
 
-    const handleLogin = async (type) => {
+    const handleLogin = async (type:any) => {
         const email = emailRef.current?.value;
         const password = passwordRef.current?.value;
 
@@ -25,14 +27,14 @@ const Auth = () => {
         }
     };
 
-    const handleOAuthLogin = async (provider) => {
+    const handleOAuthLogin = async (provider:any) => {
         // You need to enable the third party auth you want in Authentication > Settings
         // Read more on: https://supabase.com/docs/guides/auth#third-party-logins
         let { error } = await supabase.auth.signIn({ provider });
         if (error) console.log("Error: ", error.message);
     };
 
-    const forgotPassword = async (e) => {
+    const forgotPassword = async (e:any) => {
         // Read more on https://supabase.com/docs/reference/javascript/reset-password-email#notes
         e.preventDefault();
         const email = prompt("Please enter your email:");

@@ -1,8 +1,9 @@
 import { supabase } from "../lib/api";
-import { useRef } from "react";
+import { Dispatch, SetStateAction, useRef } from "react";
 
-const RecoverPassword = ({ token, setRecoveryToken }) => {
-    const newPasswordRef = useRef();
+type RecoverPasswordProp = { token:string, setRecoveryToken:Dispatch<SetStateAction<any>> };
+const RecoverPassword = ({ token, setRecoveryToken }:RecoverPasswordProp) => {
+    const newPasswordRef = useRef<any>();
 
     const handleNewPassword = async () => {
         const newPassword = newPasswordRef.current.value;

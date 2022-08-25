@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { supabase } from "./lib/api";
 import Auth from "./components/Auth";
 import Home from "./components/Home";
+import { Nullable } from "./type/Nullable";
+import { User } from "@supabase/gotrue-js";
 
 function App() {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState<Nullable<User>>(null);
 
     useEffect(() => {
         const session = supabase.auth.session();

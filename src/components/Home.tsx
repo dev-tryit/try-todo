@@ -1,12 +1,14 @@
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "../lib/api";
+import { Nullable } from "../type/Nullable";
 import RecoverPassword from "./RecoverPassword";
 import TodoItem from "./TodoItem";
 
-const Home = ({ user }) => {
+type HomeProp = {user:any};
+const Home = ({ user }:HomeProp) => {
     const [recoveryToken, setRecoveryToken] = useState(null);
-    const [todos, setTodos] = useState([]);
-    const newTaskTextRef = useRef();
+    const [todos, setTodos] = useState<any[]>([]);
+    const newTaskTextRef = useRef<any>();
     const [errorText, setError] = useState("");
 
     useEffect(() => {
@@ -16,7 +18,7 @@ const Home = ({ user }) => {
          */
         let url = window.location.hash;
         let query = url.slice(1);
-        let result = {};
+        let result:Record<any,any> = {};
 
         query.split("&").forEach((part) => {
             const item = part.split("=");
@@ -36,13 +38,13 @@ const Home = ({ user }) => {
             .select("*")
             .order("id", { ascending: false });
         if (error) console.log("error", error);
-        else setTodos(todos);
+        else todos && setTodos(todos);
     };
 
-    const deleteTodo = async (id) => {
+    const deleteTodo = async (id:string) => {
         try {
             await supabase.from("todos").delete().eq("id", id);
-            setTodos(todos.filter((x) => x.id !== id));
+            setTodos((todos??[]).filter((x) => x.id !== id));
         } catch (error) {
             console.log("error", error);
         }
@@ -61,7 +63,7 @@ const Home = ({ user }) => {
             if (error) setError(error.message);
             else {
                 setTodos([todo, ...todos]);
-                setError(null);
+                setError("");
                 newTaskTextRef.current.value = "";
             }
         }
