@@ -32,9 +32,6 @@ const TodoItem = ({ todo, onDelete }:TodoItemProp) => {
                     className={`w-full flex-grow ${
                         isCompleted ? "line-through" : ""
                     }`}
-                    style={{
-                        whiteSpace: 'pre-wrap',
-                    }}
                 >
                     {todo.task}
                 </span>
